@@ -69,9 +69,34 @@ def sample_get_cache_itunes_data(search_term,media_term="all"):
 ## [PROBLEM 1] [250 POINTS]
 print("\n***** PROBLEM 1 *****\n")
 
+#print(type(sample_get_cache_itunes_data('beyonce')['results'][0]))
+print((sample_get_cache_itunes_data('beyonce')['results'][0]))
+#print(sample_get_cache_itunes_data('beyonce')['results'][0]['trackName'])
+#print(sample_get_cache_itunes_data('beyonce')['results'][0]['artistName'])
+#print(sample_get_cache_itunes_data('beyonce')['results'][0]['trackViewUrl'])
+#print(sample_get_cache_itunes_data('beyonce')['results'][0]['trackId'])
 
 ## For problem 1, you should define a class Media, representing ANY piece of media you can find on iTunes search. 
 
+
+class Media():
+	def __init__(self,data_dict): 
+		self.title = data_dict['trackName']
+		self.author = data_dict['artistName']
+		self.itunes_URL = data_dict['trackViewUrl']
+		self.itunes_id = data_dict['trackId']
+
+	def __str__(self):
+		return "{} by {}".format(self.title, self.author)
+
+	def __repr__(self):
+		return "ITUNES MEDIA: {}".format(self.itunes_id)
+
+	def __len__(self):		
+		return 0
+
+	def __contains__(self,string_input):
+		return string_input in self.title
 
 ## The Media class constructor should accept one dictionary data structure representing a piece of media from iTunes as input to the constructor.
 ## It should instatiate at least the following instance variables:
@@ -87,7 +112,6 @@ print("\n***** PROBLEM 1 *****\n")
 ## - a special contains method (for the in operator) which takes one additional input, as all contains methods must, which should always be a string, and checks to see if the string input to this contains method is INSIDE the string representing the title of this piece of media (the title instance variable)
 
 
-
 ## [PROBLEM 2] [400 POINTS]
 print("\n***** PROBLEM 2 *****\n")
 ## In 2 parts.
@@ -95,6 +119,15 @@ print("\n***** PROBLEM 2 *****\n")
 ## Now, you'll define 2 more different classes, each of which *inherit from* class Media:
 ## class Song
 ## class Movie
+
+class Song(Media):
+	def __init__(self):
+		self.album = data_dict['collectionName']
+		self.track_number = data_dict['trackNumber']
+		self.song_genre = data_dict['primaryGenreName']
+
+	def __len__(self):
+		self.trackTime = (data_dict['trackTimeMillis']/1000)
 
 ## In the class definitions, you can assume a programmer would pass to each class's constructor only a dictionary that represented the correct media type (song, movie).
 
@@ -109,8 +142,22 @@ print("\n***** PROBLEM 2 *****\n")
 
 ## Should have the len method overridden to return the number of seconds in the song. (HINT: The data supplies number of milliseconds in the song... How can you access that data and convert it to seconds?)
 
+'''
+class Movie(Media):
+	def __init__(self):
+		self.rating = 
+		self.movie_genre =
+		self.description = 
 
+	def __len__():
+		self.movietime = 
 
+	def title_words_num(self):
+		if self.description != 0:
+			return 
+		else:
+			return 0
+'''
 ### class Movie:
 
 ## Should have the following additional instance variables:
@@ -182,7 +229,6 @@ print("\n***** PROBLEM 4 *****\n")
 ## HINT #3: Check out the sections in the textbook on opening and writing files, and the section(s) on CSV files!
 
 ## HINT #4: Write or draw out your plan for this before you actually start writing the code! That will make it much easier.
-
 
 
 
