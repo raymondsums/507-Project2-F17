@@ -69,13 +69,6 @@ def sample_get_cache_itunes_data(search_term,media_term="all"):
 ## [PROBLEM 1] [250 POINTS]
 print("\n***** PROBLEM 1 *****\n")
 
-#print(type(sample_get_cache_itunes_data('beyonce')['results'][0]))
-print((sample_get_cache_itunes_data('beyonce')['results'][0]))
-#print(sample_get_cache_itunes_data('beyonce')['results'][0]['trackName'])
-#print(sample_get_cache_itunes_data('beyonce')['results'][0]['artistName'])
-#print(sample_get_cache_itunes_data('beyonce')['results'][0]['trackViewUrl'])
-#print(sample_get_cache_itunes_data('beyonce')['results'][0]['trackId'])
-
 ## For problem 1, you should define a class Media, representing ANY piece of media you can find on iTunes search. 
 
 
@@ -95,8 +88,8 @@ class Media():
 	def __len__(self):		
 		return 0
 
-	def __contains__(self,string_input):
-		return string_input in self.title
+	def __contains__(self,search_term):
+		return search_term in self.title
 
 ## The Media class constructor should accept one dictionary data structure representing a piece of media from iTunes as input to the constructor.
 ## It should instatiate at least the following instance variables:
@@ -121,13 +114,16 @@ print("\n***** PROBLEM 2 *****\n")
 ## class Movie
 
 class Song(Media):
-	def __init__(self):
+	def __init__(self,data_dict):
+		super().__init__(data_dict)
 		self.album = data_dict['collectionName']
 		self.track_number = data_dict['trackNumber']
-		self.song_genre = data_dict['primaryGenreName']
+		self.genre = data_dict['primaryGenreName']
+		self.trackTime = data_dict['trackTimeMillis']
 
 	def __len__(self):
-		self.trackTime = (data_dict['trackTimeMillis']/1000)
+		self.trackTimeInSec = int((self.trackTime)/1000)
+		return self.trackTimeInSec
 
 ## In the class definitions, you can assume a programmer would pass to each class's constructor only a dictionary that represented the correct media type (song, movie).
 
@@ -142,22 +138,25 @@ class Song(Media):
 
 ## Should have the len method overridden to return the number of seconds in the song. (HINT: The data supplies number of milliseconds in the song... How can you access that data and convert it to seconds?)
 
-'''
-class Movie(Media):
-	def __init__(self):
-		self.rating = 
-		self.movie_genre =
-		self.description = 
 
-	def __len__():
-		self.movietime = 
+class Movie(Media):
+	def __init__(self, data_dict):
+		super().__init__(data_dict)
+		self.rating = data_dict['contentAdvisoryRating']
+		self.genre = data_dict['primaryGenreName']
+		self.description = data_dict['longDescription']
+		self.movieTime = data_dict['trackTimeMillis']
+
+	def __len__(self):
+		self.movieTimeInMin = int(self.movieTime/60000)
+		return self.movieTimeInMin
 
 	def title_words_num(self):
-		if self.description != 0:
-			return 
-		else:
+		if self.description == 0:
 			return 0
-'''
+		else:
+			return (len((self.description).split()))
+
 ### class Movie:
 
 ## Should have the following additional instance variables:
@@ -169,8 +168,6 @@ class Movie(Media):
 ## Should have the len method overridden to return the number of minutes in the movie (HINT: The data returns the number of milliseconds in the movie... how can you convert that to minutes?)
 
 ## Should have an additional method called title_words_num that returns an integer representing the number of words in the movie description. If there is no movie description, this method should return 0.
-
-
 
 ## [PROBLEM 3] [150 POINTS]
 print("\n***** PROBLEM 3 *****\n")
@@ -187,7 +184,6 @@ song_samples = sample_get_cache_itunes_data("love","music")["results"]
 
 movie_samples = sample_get_cache_itunes_data("love","movie")["results"]
 
-
 ## You may want to do some investigation on these variables to make sure you understand correctly what type of value they hold, what's in each one!
 
 ## Use the values in these variables above, and the class definitions you've written, in order to create a list of each media type, including "media" generally. 
@@ -198,16 +194,57 @@ movie_samples = sample_get_cache_itunes_data("love","movie")["results"]
 
 ## You may use any method of accumulation to make that happen.
 
+media_list = []
+for i in range(len(media_samples)):
+	media_list.append((Media(media_samples[i])))
+song_list = []
+for i in range(len(song_samples)):
+	song_list.append((Song(song_samples[i])))
+movie_list = []
+for i in range(len(movie_samples)):
+	if 'trackTimeMillis' in movie_samples[i]: 
+		movie_list.append(Movie(movie_samples[i]))
+	else:
+		movie_list.append(0)
 
-
+print(movie_samples[0]['trackName'])
+print(movie_samples[0]['artistName'])
+print(movie_samples[0]['trackId'])
+print(movie_samples[0]['trackViewUrl'])
+print((int(movie_samples[0]['trackTimeMillis'])/60000))
 
 ## [PROBLEM 4] [200 POINTS]
 print("\n***** PROBLEM 4 *****\n")
 
 ## Finally, write 3 CSV files:
 # - movies.csv
+
+'''
+outfile1 = open("movies.csv","w")
+outfile1.write('"title","artist","id","url","length"\n')
+for i in range(len(movie_samples)):
+	outfile1.write('"{}","{}","{}","{}","{}"\n'.format(movie_samples[i]['']))
+outfile1.close()
+'''
 # - songs.csv
+
+'''
+outfile2 = open("songs.csv","w")
+outfile2.write('"title","artist","id","url","length"\n')
+for song in song_list:
+	outfile2.write('"{}","{}","{}","{}","{}"\n'.format(song))
+outfile2.close()
+'''
+
 # - media.csv
+
+'''
+outfile3 = open("medias.csv","w")
+outfile3.write('"title","artist","id","url","length"\n')
+for media in media_list:
+	outfile3.write('"{}","{}","{}","{}","{}"\n'.format(media))
+outfile3.close()
+'''
 
 ## Each of those CSV files should have 5 columns each:
 # - title
@@ -229,7 +266,6 @@ print("\n***** PROBLEM 4 *****\n")
 ## HINT #3: Check out the sections in the textbook on opening and writing files, and the section(s) on CSV files!
 
 ## HINT #4: Write or draw out your plan for this before you actually start writing the code! That will make it much easier.
-
 
 
 
