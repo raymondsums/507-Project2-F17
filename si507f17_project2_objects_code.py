@@ -91,6 +91,7 @@ class Media():
 	def __contains__(self,search_term):
 		return search_term in self.title
 
+
 ## The Media class constructor should accept one dictionary data structure representing a piece of media from iTunes as input to the constructor.
 ## It should instatiate at least the following instance variables:
 ## - title
@@ -122,7 +123,7 @@ class Song(Media):
 		self.trackTime = data_dict['trackTimeMillis']
 
 	def __len__(self):
-		self.trackTimeInSec = int((self.trackTime)/1000)
+		self.trackTimeInSec = ((self.trackTime)//1000)
 		return self.trackTimeInSec
 
 ## In the class definitions, you can assume a programmer would pass to each class's constructor only a dictionary that represented the correct media type (song, movie).
@@ -144,11 +145,11 @@ class Movie(Media):
 		super().__init__(data_dict)
 		self.rating = data_dict['contentAdvisoryRating']
 		self.genre = data_dict['primaryGenreName']
-		self.description = data_dict['longDescription']
+		self.description = data_dict['longDescription'].encode('utf-8')
 		self.movieTime = data_dict['trackTimeMillis']
 
 	def __len__(self):
-		self.movieTimeInMin = int(self.movieTime/60000)
+		self.movieTimeInMin = (self.movieTime//60000)
 		return self.movieTimeInMin
 
 	def title_words_num(self):
@@ -202,16 +203,11 @@ for i in range(len(song_samples)):
 	song_list.append((Song(song_samples[i])))
 movie_list = []
 for i in range(len(movie_samples)):
-	if 'trackTimeMillis' in movie_samples[i]: 
-		movie_list.append(Movie(movie_samples[i]))
+	if 'trackTimeMillis' in movie_samples[i]:
+		movie_list.append((Movie(movie_samples[i])))
 	else:
-		movie_list.append(0)
-
-print(movie_samples[0]['trackName'])
-print(movie_samples[0]['artistName'])
-print(movie_samples[0]['trackId'])
-print(movie_samples[0]['trackViewUrl'])
-print((int(movie_samples[0]['trackTimeMillis'])/60000))
+		movie_samples[i]['trackTimeMillis'] = 0
+		movie_list.append((Movie(movie_samples[i])))
 
 ## [PROBLEM 4] [200 POINTS]
 print("\n***** PROBLEM 4 *****\n")
@@ -219,32 +215,31 @@ print("\n***** PROBLEM 4 *****\n")
 ## Finally, write 3 CSV files:
 # - movies.csv
 
-'''
+
 outfile1 = open("movies.csv","w")
 outfile1.write('"title","artist","id","url","length"\n')
-for i in range(len(movie_samples)):
-	outfile1.write('"{}","{}","{}","{}","{}"\n'.format(movie_samples[i]['']))
+for movie in movie_list:
+	outfile1.write('"{}","{}","{}","{}","{}"\n'.format(movie.title,movie.author,movie.itunes_id,movie.itunes_URL,len(movie)))
 outfile1.close()
-'''
+
 # - songs.csv
 
-'''
+
 outfile2 = open("songs.csv","w")
 outfile2.write('"title","artist","id","url","length"\n')
 for song in song_list:
-	outfile2.write('"{}","{}","{}","{}","{}"\n'.format(song))
+	outfile2.write('"{}","{}","{}","{}","{}"\n'.format(song.title,song.author,song.itunes_id,song.itunes_URL,len(song)))
 outfile2.close()
-'''
+
 
 # - media.csv
 
-'''
 outfile3 = open("medias.csv","w")
 outfile3.write('"title","artist","id","url","length"\n')
 for media in media_list:
-	outfile3.write('"{}","{}","{}","{}","{}"\n'.format(media))
+	outfile3.write('"{}","{}","{}","{}","{}"\n'.format(media.title,media.author,media.itunes_id,media.itunes_URL,len(media)))
 outfile3.close()
-'''
+
 
 ## Each of those CSV files should have 5 columns each:
 # - title
@@ -266,7 +261,6 @@ outfile3.close()
 ## HINT #3: Check out the sections in the textbook on opening and writing files, and the section(s) on CSV files!
 
 ## HINT #4: Write or draw out your plan for this before you actually start writing the code! That will make it much easier.
-
 
 
 
